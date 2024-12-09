@@ -1,2 +1,0 @@
-# VidTube
-Youtube Clone
