@@ -15,10 +15,6 @@ connectDB()
         console.log(`Mongo DB connection failed: ${err}`)
     })
 
-
-
-
-
 /*
 (async () => {
     try {
