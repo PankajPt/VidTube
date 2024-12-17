@@ -8,19 +8,20 @@ const registerUser = asyncHandler(async (req, res) => {
   //get user details from frontend 
   const { fullname, email, username, password } = req.body
   //validation- fields are not empty
+  // console.log(`Request_Body\n\n${req.body}\n\n`)
   if (
     [fullname, email, username, password].some((field)=> field?.trim() === "")
   ){
     throw new ApiError(400, "All fields are required")
   }
   // check if user already exists: username, email
-  const existingUser = User.findOne({
+  const existingUser = await User.findOne({
       $or: [{ email }, { username }]
     })
   if (existingUser){
     throw new ApiError (409, "Username or email already exits")
   }
-  console.log(req)
+  console.log(req.body)
   // check for images, check for avatar
 
   const avatarLocalPath = req.files?.avatar[0]?.path

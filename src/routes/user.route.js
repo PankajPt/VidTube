@@ -2,6 +2,9 @@ import { Router } from "express";
 import registerUser from "../controllers/user.controller.js";
 import { upload } from "../middlewares/multer.middleware.js"
 const router = Router();
+
+router.route("/").get((req, res)=>{res.send("<h1>Wlcome to VidTube...</h1>")})
+
 router.route("/register").post(
     upload.fields([
         {
