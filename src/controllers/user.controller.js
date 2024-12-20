@@ -5,6 +5,11 @@ import uploadOnCloudinary from "../utils/cloudinary.js"
 import ApiResponse from "../utils/apiResponse.js"
 import fs from "fs"
 
+const unlinkFile = function (avatarPath, coverImagePath){
+  avatarPath && fs.unlinkSync(avatarPath)
+  coverImagePath && fs.unlinkSync(coverImagePath)
+}
+
 const registerUser = asyncHandler(async (req, res) => {
 //get user details from frontend 
   const { fullname, email, username, password } = req.body
@@ -19,8 +24,7 @@ const registerUser = asyncHandler(async (req, res) => {
 
 //validation- fields are not empty
   if (![fullname, email, username, password].every((field)=> field?.trim())){
-    avatarLocalPath && fs.unlinkSync(avatarLocalPath)
-    coverImageLocalPath && fs.unlinkSync(coverImageLocalPath)
+    unlinkFile(avatarLocalPath, coverImageLocalPath)
     throw new ApiError(400, "All fields are required")
   }
   
@@ -29,6 +33,7 @@ const registerUser = asyncHandler(async (req, res) => {
       $or: [{ email }, { username }]
     })
   if (existingUser){
+    unlinkFile(avatarLocalPath, coverImageLocalPath)
     throw new ApiError (409, "Username or email already exits")
   }
 
@@ -78,4 +83,5 @@ const registerUser = asyncHandler(async (req, res) => {
 
 
 
-export default registerUser;
+
+export { registerUser };
