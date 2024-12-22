@@ -4,7 +4,6 @@ import User from "../models/user.model.js";
 import uploadOnCloudinary from "../utils/cloudinary.js"
 import ApiResponse from "../utils/apiResponse.js"
 import fs from "fs"
-import { constrainedMemory } from "process";
 
 
 const unlinkFile = function (avatarPath, coverImagePath){
@@ -150,8 +149,6 @@ const logOutUser = asyncHandler (async (req, res) => {
       new: true
     }
   )
-
-  console.log(logout)
 
   const  options = {
     httpOnly: true,
