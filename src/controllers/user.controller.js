@@ -4,7 +4,8 @@ import User from "../models/user.model.js";
 import uploadOnCloudinary from "../utils/cloudinary.js"
 import ApiResponse from "../utils/apiResponse.js"
 import fs from "fs"
-import { Http2ServerRequest } from "http2";
+import { constrainedMemory } from "process";
+
 
 const unlinkFile = function (avatarPath, coverImagePath){
   avatarPath && fs.unlinkSync(avatarPath)
@@ -26,13 +27,14 @@ const generateAccessAndRefreshToken = async (userID) => {
   }
 }
 
-
 const registerUser = asyncHandler(async (req, res) => {
 //get user details from frontend 
   const { fullname, email, username, password } = req.body
+  console.log(req.body, req.files)
 
 // check for images, check for avatar
-  const avatarLocalPath = req.files?.avatar[0]?.path
+  let avatarLocalPath;
+  req.files.avatar ? avatarLocalPath = req.files?.avatar[0]?.path : avatarLocalPath = ""
 
 // const coverImageLocalPath = req.files?.coverImage[0]?.path
   let coverImageLocalPath;
@@ -40,7 +42,7 @@ const registerUser = asyncHandler(async (req, res) => {
 
 
 //validation- fields are not empty
-  if (![fullname, email, username, password].every((field)=> field?.trim())){
+  if (![fullname, email, username, password, avatarLocalPath].every((field)=> field?.trim())){
     unlinkFile(avatarLocalPath, coverImageLocalPath)
     throw new ApiError(400, "All fields are required")
   }
@@ -54,9 +56,8 @@ const registerUser = asyncHandler(async (req, res) => {
     throw new ApiError (409, "Username or email already exits")
   }
 
-
-
   if (!avatarLocalPath){
+    unlinkFile(avatarLocalPath, coverImageLocalPath)
     throw new ApiError(400, "Avatar file is required")
   }
 
@@ -67,7 +68,7 @@ const registerUser = asyncHandler(async (req, res) => {
 // check avatar
 
   if (!avatar){
-    throw new ApiError(400, "Avatar file is required")
+    throw new ApiError(500, "Error while uploading on cloudinary...")
   }
 
 // create user object and create entry DB
@@ -103,7 +104,7 @@ const loginUser = asyncHandler ( async (req, res) => {
   const { username, email, password } = req.body
 
 // username or email
-  if (!username || !email){
+  if (!(username || email)){
     throw new ApiError(400, "Username or Email is required")
   }
 
@@ -141,7 +142,7 @@ return res
 })
 
 const logOutUser = asyncHandler (async (req, res) => {
- await User.findByIdAndUpdate(req.user._id, 
+ const logout = await User.findByIdAndUpdate(req.user._id, 
     {
       $set: { refreshToken: undefined }
     },
@@ -149,6 +150,8 @@ const logOutUser = asyncHandler (async (req, res) => {
       new: true
     }
   )
+
+  console.log(logout)
 
   const  options = {
     httpOnly: true,
