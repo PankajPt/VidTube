@@ -5,7 +5,7 @@ import uploadOnCloudinary from "../utils/cloudinary.js"
 import ApiResponse from "../utils/apiResponse.js"
 import fs from "fs"
 import jwt from "jsonwebtoken"
-import { decode } from "punycode";
+
 
 const  options = {
   httpOnly: true,
@@ -146,7 +146,7 @@ return res
 const logOutUser = asyncHandler (async (req, res) => {
  const logout = await User.findByIdAndUpdate(req.user._id, 
     {
-      $set: { refreshToken: undefined }
+      $unset: { refreshToken: 1 }
     },
     {
       new: true
@@ -170,12 +170,11 @@ const refreshAccessToken = asyncHandler (async (req, res)=>{
 try {
     const decodedToken = jwt.verify(incomingRefreshToken, process.env.REFRESH_TOKEN_SECRET)
     const user = await User.findById(decodedToken._id)
-  
     if (!user){
       throw new ApiError("Invalid refresh token")
     }
   
-    if (decodedToken !== user?.refreshToken){
+    if (incomingRefreshToken !== user?.refreshToken){
       throw new ApiError(401, "Refresh token is expired or used")
     }
   
@@ -192,17 +191,20 @@ try {
 }
 })
 
-const changeCurrentPassword = asyncHandler (async(req, res)=>{
+const changePassword = asyncHandler (async(req, res)=>{
   const { oldPassword, newPassword, confirmPassword } = req.body
-
-  const user = await User.findById(req.user?._id)
-  const isOldPasswordCorrect = await isPasswordCorrect(oldPassword)
-
-  if (!isOldPasswordCorrect){
-    throw new ApiError(400, "Invalid old password...")
+  if ([oldPassword, newPassword, confirmPassword].every((field)=> !field )){
+    throw new ApiError(400, "All field are required")
   }
 
-  if (!(newPassword === confirmPassword)){
+  const user = await User.findById(req.user?._id)
+  const isOldPasswordCorrect = await user.isPasswordCorrect(oldPassword)
+
+  if (!isOldPasswordCorrect){
+    throw new ApiError(401, "Invalid old password...")
+  }
+
+  if (newPassword !== confirmPassword){
     throw new ApiError(409, "new password and confirmed paassword not match")
   }
 
@@ -227,7 +229,7 @@ const updateAccountDetails = asyncHandler(async(req, res)=>{
     throw new ApiError(400, "All fields are required")
   }
 
-  const user = User.findByIdAndUpdate(req.user?._id,
+  const user = await User.findByIdAndUpdate(req.user?._id,
     {
       $set: {
         fullname,
@@ -299,7 +301,7 @@ export {
   loginUser,
   logOutUser,
   refreshAccessToken,
-  changeCurrentPassword,
+  changePassword,
   getCurrentUser,
   updateAccountDetails,
   updateAvatar,
