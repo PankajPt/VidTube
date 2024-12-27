@@ -1,7 +1,7 @@
 import asyncHandler from "../utils/asyncHandler.js";
 import ApiError from "../utils/apiError.js"
 import User from "../models/user.model.js";
-import uploadOnCloudinary from "../utils/cloudinary.js"
+import { uploadOnCloudinary, deleteFromCloudinary } from "../utils/cloudinary.js"
 import ApiResponse from "../utils/apiResponse.js"
 import fs from "fs"
 import jwt from "jsonwebtoken"
@@ -144,7 +144,7 @@ return res
 })
 
 const logOutUser = asyncHandler (async (req, res) => {
- const logout = await User.findByIdAndUpdate(req.user._id, 
+  const logout = await User.findByIdAndUpdate(req.user._id, 
     {
       $unset: { refreshToken: 1 }
     },
@@ -253,6 +253,8 @@ const updateAvatar = asyncHandler(async(req, res)=>{
     throw new ApiError(500, "Error while uploading avatar file, please try again")
   }
 
+  await deleteFromCloudinary(req.user.avatar)
+
   const user = await User.findOneAndUpdate(
     req.user?._id,
     {
@@ -279,6 +281,8 @@ const updateCoverImage = asyncHandler(async(req, res)=>{
   if (!newCoverImage.url){
     throw new ApiError(500, "Error while uploading cover image file, please try again")
   }
+  
+  await deleteFromCloudinary(req.user.coverImage)
 
   const user = await User.findOneAndUpdate(
     req.user?._id,

@@ -14,7 +14,7 @@ const uploadOnCloudinary = async (localFilePath) => {
         const response = await cloudinary.uploader.upload(localFilePath, {
             resource_type: "auto"
         })
-        console.log(`File is uploaded on cloudinary, ${response.url}\n${localFilePath}`)
+        console.log(`File is uploaded on cloudinary, ${response.url}`)
         fs.unlinkSync(localFilePath)
         return response
     } catch (error) {
@@ -22,4 +22,24 @@ const uploadOnCloudinary = async (localFilePath) => {
     }
 }
 
-export default uploadOnCloudinary
+const deleteFromCloudinary = async (uri) => {
+    try {
+        if (!uri) return `Uri required`
+
+        const [publicId] = uri?.split('/').pop().split('.')
+
+        if (!publicId) return `Public-Id not found`
+
+        const deleteRes = await cloudinary.uploader.destroy(publicId, {
+           resource_type: "image"
+        })
+        console.log(`File ${uri} is removed from cloudinary`)
+
+        return deleteRes
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+export { uploadOnCloudinary,
+    deleteFromCloudinary }
