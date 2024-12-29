@@ -32,8 +32,18 @@ const generateAccessAndRefreshToken = async (userID) => {
   }
 }
 
+const validateResourceType = (mime, type, path) => { 
+  const isValidResource = mime.startsWith(`${type}/`)
+  if (!isValidResource) {
+    unlinkFile(path)
+    throw new ApiError(400, `Invalid ${type} type`)
+  }
+}
+
+
 const registerUser = asyncHandler(async (req, res) => {
 //get user details from frontend 
+  const type = "image"
   const { fullname, email, username, password } = req.body
 
 // check for images, check for avatar
@@ -64,13 +74,15 @@ const registerUser = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Avatar file is required")
   }
 
+  validateResourceType(req.files.avatar[0].mimetype, type, avatarLocalPath)
+  validateResourceType(req.files.coverImage[0].mimetype, type, coverImageLocalPath)
+
 // upload image and avatar on cloudinary
-  const type = "image"
   const avatar = await uploadOnCloudinary(avatarLocalPath, type)
   const coverImg = await uploadOnCloudinary(coverImageLocalPath, type)
 // check avatar
-
-  if (!(avatar || avatar.error.message === `Invalid ${type} file`)){
+ 
+  if (!avatar){
     throw new ApiError(500, "Error while uploading on cloudinary...")
   }
 
