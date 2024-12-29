@@ -18,8 +18,10 @@ app.use(cookieParser())
 
 import UserRouter from "./routes/user.route.js"
 import SubscriptionRouter from "./routes/subscribe.route.js"
+import videoRoute from "./routes/video.route.js"
 
 app.use("/api/v1/users", UserRouter);
 app.use("/api/v1/subscription", SubscriptionRouter);
+app.use("api/v1/video", videoRoute)
 
 export default app

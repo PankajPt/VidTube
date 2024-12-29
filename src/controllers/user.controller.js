@@ -12,9 +12,9 @@ const  options = {
   secure: true
 }
 
-const unlinkFile = function (avatarPath, coverImagePath){
-  avatarPath && fs.unlinkSync(avatarPath)
-  coverImagePath && fs.unlinkSync(coverImagePath)
+const unlinkFile = function (file1, file2){
+  file1 && fs.unlinkSync(file1)
+  file2 && fs.unlinkSync(file2)
 }
 
 const generateAccessAndRefreshToken = async (userID) => {
