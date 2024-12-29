@@ -35,13 +35,11 @@ const generateAccessAndRefreshToken = async (userID) => {
 const registerUser = asyncHandler(async (req, res) => {
 //get user details from frontend 
   const { fullname, email, username, password } = req.body
-  console.log(req.body, req.files)
 
 // check for images, check for avatar
   let avatarLocalPath;
   req.files.avatar ? avatarLocalPath = req.files?.avatar[0]?.path : avatarLocalPath = ""
 
-// const coverImageLocalPath = req.files?.coverImage[0]?.path
   let coverImageLocalPath;
   req.files.coverImage ? coverImageLocalPath = req.files?.coverImage[0]?.path : coverImageLocalPath = ""
 
@@ -67,12 +65,12 @@ const registerUser = asyncHandler(async (req, res) => {
   }
 
 // upload image and avatar on cloudinary
-  const avatar = await uploadOnCloudinary(avatarLocalPath)
-  const coverImg = await uploadOnCloudinary(coverImageLocalPath)
-
+  const type = "image"
+  const avatar = await uploadOnCloudinary(avatarLocalPath, type)
+  const coverImg = await uploadOnCloudinary(coverImageLocalPath, type)
 // check avatar
 
-  if (!avatar){
+  if (!(avatar || avatar.error.message === `Invalid ${type} file`)){
     throw new ApiError(500, "Error while uploading on cloudinary...")
   }
 
@@ -253,7 +251,7 @@ const updateAvatar = asyncHandler(async(req, res)=>{
     throw new ApiError(500, "Error while uploading avatar file, please try again")
   }
 
-  await deleteFromCloudinary(req.user.avatar)
+  await deleteFromCloudinary(req.user.avatar, "image")
 
   const user = await User.findOneAndUpdate(
     req.user?._id,
@@ -282,7 +280,7 @@ const updateCoverImage = asyncHandler(async(req, res)=>{
     throw new ApiError(500, "Error while uploading cover image file, please try again")
   }
   
-  await deleteFromCloudinary(req.user.coverImage)
+  await deleteFromCloudinary(req.user.coverImage, "image")
 
   const user = await User.findOneAndUpdate(
     req.user?._id,
