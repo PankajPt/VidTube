@@ -64,6 +64,7 @@ const registerUser = asyncHandler(async (req, res) => {
   const existingUser = await User.findOne({
       $or: [{ email }, { username }]
     })
+
   if (existingUser){
     unlinkFile(avatarLocalPath, coverImageLocalPath)
     throw new ApiError (409, "Username or email already exits")
@@ -75,19 +76,18 @@ const registerUser = asyncHandler(async (req, res) => {
   }
 
   validateResourceType(req.files.avatar[0].mimetype, type, avatarLocalPath)
-  validateResourceType(req.files.coverImage[0].mimetype, type, coverImageLocalPath)
+  coverImageLocalPath && validateResourceType(req.files.coverImage[0].mimetype, type, coverImageLocalPath)
 
 // upload image and avatar on cloudinary
   const avatar = await uploadOnCloudinary(avatarLocalPath, type)
   const coverImg = await uploadOnCloudinary(coverImageLocalPath, type)
-// check avatar
- 
+
+  // check avatar 
   if (!avatar){
     throw new ApiError(500, "Error while uploading on cloudinary...")
   }
 
 // create user object and create entry DB
-
   const user = await User.create({
     fullname,
     avatar: avatar.url,
@@ -98,7 +98,6 @@ const registerUser = asyncHandler(async (req, res) => {
   })
 
 // remove password and refresh token from field
-
   const createdUser = await User.findById(user._id).select(
     "-password -refreshToken"
   )
