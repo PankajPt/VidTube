@@ -6,6 +6,10 @@ import { uploadAndPublish } from "../controllers/video.controller.js"
 const router = Router();
 
 router.use(verifyJWT)
+
+router.route("/test").get((req, res)=>{
+    return res.send("All good")
+})
 router.route("/:userid/publish").post(upload.fields([
     {
         name: "videoFile",
