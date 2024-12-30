@@ -57,7 +57,7 @@ const registerUser = asyncHandler(async (req, res) => {
 //validation- fields are not empty
   if (![fullname, email, username, password, avatarLocalPath].every((field)=> field?.trim())){
     unlinkFile(avatarLocalPath, coverImageLocalPath)
-    throw new ApiError(400, "All fields are required")
+    throw new ApiError(400, "All fields (fullname, email, username, password, avatar) are required and must not be empty")
   }
   
 // check if user already exists: username, email
@@ -161,12 +161,12 @@ const logOutUser = asyncHandler (async (req, res) => {
       new: true
     }
   )
-
+  // console.log(logout)
   return res
     .status(200)
     .clearCookie("accessToken", options)
     .clearCookie("refreshToken", options)
-    .json(new ApiResponse(200, {}, "User Logged Out"))
+    .json(new ApiResponse(200, logout.username, "User Logged Out"))
 })
 
 const refreshAccessToken = asyncHandler (async (req, res)=>{

@@ -1,7 +1,9 @@
 import { Router } from "express"
 import { upload } from "../middlewares/multer.middleware.js"
 import {verifyJWT} from "../middlewares/auth.middleware.js"
-import { uploadAndPublish } from "../controllers/video.controller.js"
+import { uploadVideo,
+    isPublished
+ } from "../controllers/video.controller.js"
 
 const router = Router();
 
@@ -10,7 +12,7 @@ router.use(verifyJWT)
 router.route("/test").get((req, res)=>{
     return res.send("All good")
 })
-router.route("/:userid/publish").post(upload.fields([
+router.route("/:userid/upload").post(upload.fields([
     {
         name: "videoFile",
         maxCount: 1
@@ -19,7 +21,8 @@ router.route("/:userid/publish").post(upload.fields([
         name: "thumbnail",
         maxCount: 1
     }
-]), uploadAndPublish)
+]), uploadVideo)
 
+router.route("/:userid/:v_id/publish").post(isPublished)
 
 export default router
