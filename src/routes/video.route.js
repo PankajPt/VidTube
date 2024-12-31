@@ -1,7 +1,7 @@
 import { Router } from "express"
 import { upload } from "../middlewares/multer.middleware.js"
 import {verifyJWT} from "../middlewares/auth.middleware.js"
-import { isValidUser } from "../middlewares/validuser.middleware.js"
+import { verifyUserPermission } from "../middlewares/ownerPermissionHandler.middleware.js"
 import { uploadVideo,
         isPublished,
         deleteVideo,
@@ -28,6 +28,6 @@ router.route("/:userId/upload").post(upload.fields([
     }
 ]), uploadVideo)
 
-router.route("/publish").post(isValidUser, isPublished)
-router.route("/delete").get(isValidUser, deleteVideo)
+router.route("/publish").post(verifyUserPermission, isPublished)
+router.route("/delete").get(verifyUserPermission, deleteVideo)
 export default router

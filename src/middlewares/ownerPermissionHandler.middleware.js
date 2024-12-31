@@ -3,7 +3,7 @@ import ApiError from "../utils/apiError.js"
 import Video from "../models/video.model.js"
 
 
-export const isValidUser = asyncHandler(async(req, _, next) => {
+export const verifyUserPermission = asyncHandler(async(req, _, next) => {
     const videoId = req.query?.videoId
 
     if (!videoId){
