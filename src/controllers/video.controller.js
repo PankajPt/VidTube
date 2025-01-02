@@ -5,7 +5,7 @@ import User from "../models/user.model.js"
 import Video from "../models/video.model.js"
 import { uploadOnCloudinary, deleteFromCloudinary } from "../utils/cloudinary.js"
 import fs from "fs"
-import mongoose from "mongoose"
+
 
 // upload video
 const unlinkFile = (file1, file2) => {
@@ -124,12 +124,13 @@ const getVideos = asyncHandler(async(req, res)=>{
 
 const getVideoById = asyncHandler(async(req, res) => {
     // get id from params
+    const videoId = req.params?.videoId
     // getuser id from if available
     // validate video objectid
     // fetch from db
     // update video views count
     // update user watch history
-    
+
 })
 
 export { uploadVideo,
