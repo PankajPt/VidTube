@@ -122,9 +122,19 @@ const getVideos = asyncHandler(async(req, res)=>{
         .json(new ApiResponse(200, videos, "videos fetched successfully" ))
 })
 
+const getVideoById = asyncHandler(async(req, res) => {
+    // get id from params
+    // getuser id from if available
+    // validate video objectid
+    // fetch from db
+    // update video views count
+    // update user watch history
+    
+})
 
 export { uploadVideo,
         isPublished,
         deleteVideo,
-        getVideos
+        getVideos,
+        getVideoById
     }
