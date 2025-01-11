@@ -6,10 +6,6 @@
 
 #### User Authentication: Secure login and registration with JWT-based authentication.
 #### Video Upload: Users can upload videos with titles, descriptions, and tags.
-#### Video Streaming: Watch videos with smooth playback using progressive streaming.
-#### Comments and Likes: Engage with video content through comments and likes.
-#### Search and Filter: Find videos using keywords, tags, and categories.
-#### Responsive Design: Optimized for mobile, tablet, and desktop devices.
 
 ### Tech Stack
 
@@ -102,6 +98,10 @@ VidTube/
 ```
 
 ### Future Enhancements
+#### Video Streaming: Watch videos with smooth playback using progressive streaming.
+#### Comments and Likes: Engage with video content through comments and likes.
+#### Search and Filter: Find videos using keywords, tags, and categories.
+#### Responsive Design: Optimized for mobile, tablet, and desktop devices.
 #### Add playlists, watch-history and subscriptions.
 #### Enable live streaming functionality.
 #### Integrate video analytics for creators.
